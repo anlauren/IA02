@@ -1,0 +1,4 @@
+ajouterUneGraineCase(Case, [], newPJ1,NUM).
+ajouterUneGraineCase(Case, [T|Q], [W], NumCase) :- NumCase >6, !, N is NumCase+1, append([W], [T], Z), ajouterUneGraineCase(Case, Q, Z, N).
+ajouterUneGraineCase(Case, [T|Q], [W], NumCase) :- Case = NumCase, N is NumCase+1, append([W], [T], Z), ajouterUneGraineCase(Case, Q, Z, N).
+ajouterUneGraineCase(Case, [T|Q], [W], NumCase) :- Case \= NumCase, N is NumCase+1, NewGraine is T+1,append([W], [NewGraine], Z), ajouterUneGraineCase(Case, Q, Z, N).
