@@ -1,0 +1,11 @@
+renverser([],[]).
+renverser([T|Q],R):-renverser(Q,QR), concat(QR,[T], R).
+nieme(1,[X|_],X) :- !.
+nieme(N,[_|R],X) :- N1 is N-1, nieme(N1,R,X).
+
+
+afficheplateau(P1,P2):- write(P2), nl, write(P1), nl.
+afficheplateau(P2,P1):- renverser(P2, NP2), write(NP2), nl, write(P1), nl.
+nombreGrainesDansCase(Case,PJ1, NBGraines):- nieme(Case,PJ1, NBGraines).
+siPremiereDistributionPossible(J1, J2, PJ1, PJ2, PJ1Fin, PJ2Fin, Case, NBGrainesCase, GrainesRamassees):- PJ2 \= [0,0,0,0,0,0].
+siPremiereDistributionPossible(J1, J2, PJ1, PJ2, PJ1Fin, PJ2Fin, Case, NBGrainesCase, GrainesRamassees):- nombreGrainesDansCase(Case,PJ1, NBGrainesCase), 6-Case < NBGrainesCase.
