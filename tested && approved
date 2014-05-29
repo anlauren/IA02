@@ -9,11 +9,11 @@ afficheplateau(P2,P1):- renverser(P2, NP2), write(NP2), nl, write(P1), nl.
 nombreGrainesDansCase(Case,PJ1, NBGraines):- nieme(Case,PJ1, NBGraines).
 siPremiereDistributionPossible(J1, J2, PJ1, PJ2, PJ1Fin, PJ2Fin, Case, NBGrainesCase, GrainesRamassees):- PJ2 \= [0,0,0,0,0,0].
 siPremiereDistributionPossible(J1, J2, PJ1, PJ2, PJ1Fin, PJ2Fin, Case, NBGrainesCase, GrainesRamassees):- nombreGrainesDansCase(Case,PJ1, NBGrainesCase), 6-Case < NBGrainesCase.
+
 ajouterUneGraineCase(Case,[],[], NumCase). 
-ajouterUneGraineCase(Case,[H|T],[X|Y], NumCase):- NumCase > Case,
+ajouterUneGraineCase(Case,[H|T],[X|Y], NumCase):- NumCase = Case,
 								N is NumCase +1,
 								ajouterUneGraine(Case,T,Y, N),
 								X is H+1.
-ajouterUneGraineCase(Case,[H|T],[H|Y], NumCase):- NumCase =< Case,
-								N is NumCase +1,
+ajouterUneGraineCase(Case,[H|T],[H|Y], NumCase):- N is NumCase +1,
 								ajouterUneGraineCase(Case,T,Y, N).
