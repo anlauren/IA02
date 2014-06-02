@@ -32,6 +32,5 @@ distribuerSurPlateau(1, Case, NBGrainesCase, PJ1, NewPJ1, CaseArrivee, NBGraines
 																						ajouterUneGraineCase(Case, PJ1, NewPJ1, 0),
 																						distribuerSurPlateau(0, Case2, NBGrainesCase, NewPJ1, NewPJ1, CaseArrivee, N). /*nieme(Case2, NewPJ1, NewNBGrainesCase).*/
 distribuerSurPlateau(1, 1, NBGrainesCase, PJ1, NewPJ1, CaseArrivee, NBGrainesRestantes):- 
-																						N is NBGrainesRestantes-1, 
-																						ajouterUneGraineCase(Case, PJ1, NewPJ1, 0), 
+																						N is NBGrainesRestantes-1											ajouterUneGraineCase(Case, PJ1, NewPJ1, 0), 
 																						distribuerSurPlateau(0, 1, NBGrainesCase, NewPJ1, NewPJ1, CaseArrivee, N).
