@@ -1,0 +1,44 @@
+concat([], L, L).
+concat([T|Q], L, [T|R]):- concat(Q,L,R).
+renverser([],[]).
+renverser([T|Q],R):-renverser(Q,QR), concat(QR,[T], R).
+
+
+distribuerSurPlateau(0, Case, NBGrainesCase, PJ1, PJ1, CaseArrivee, Nbr):- NBGrainesCase == 0, CaseArrivee is Case, Nbr is NBGrainesCase, !.
+
+distribuerSurPlateau(0, Case, NBGrainesCase, [], [], CaseArrivee,NBGrainesRestantes ):- CaseArrivee is -99, NBGrainesRestantes = NBGrainesCase.
+
+
+distribuerSurPlateau(0, Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):- Case > 1,
+Case2 is Case-1,
+T1 is T,
+distribuerSurPlateau(0, Case2, NBGrainesCase, Q, Q1, CaseArrivee, NBGrainesRestantes).
+distribuerSurPlateau(0, Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):- Case = 1,
+T1 is 0,
+Case2 is Case-1,
+distribuerSurPlateau(0, Case2, T, Q, Q1, CaseArrivee, NBGrainesRestantes).
+distribuerSurPlateau(0, Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):- Case < 1,
+																								T1 is T+1,
+																								N is NBGrainesCase -1,
+																								Case2 is Case-1,
+																								distribuerSurPlateau(0, Case2, N, Q, Q1, CaseArrivee, NBGrainesRestantes).
+
+
+
+distribuerSurPlateau(1, Case, NBGrainesCase, [], [], CaseArrivee,NBGrainesRestantes ):- CaseArrivee is -99, NBGrainesRestantes = NBGrainesCase, !.
+distribuerSurPlateau(1, Case, -1, PJ1, PJ1, CaseArrivee, Nbr) :- renverser(PJ1, X), PJ1 is X, write('YI').
+distribuerSurPlateau(1, Case, NBGrainesCase, PJ1, PJ1, CaseArrivee, Nbr):- NBGrainesCase = 0 ,CaseArrivee is Case +1, Nbr is NBGrainesCase.
+distribuerSurPlateau(1, 6, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):-    renverser([T|Q], [A|B]), 
+																								T2 is A+1,
+																								N is NBGrainesCase -1,
+																								Case2 is 5,
+																								distribuerSurPlateau(1, Case2,N, B, Q2,CaseArrivee, NBGrainesRestantes),
+																								renverser([T2|Q2], [T1|Q1]). /* le probleme est là impossible de renvoyer une liste qui se retourne, la p**** */
+																								/* distribuerSurPlateau(1, Case2, -1, [T|Q], [T1|Q1], CaseArrivee, Nbr).*/
+distribuerSurPlateau(1, Case, NBGrainesCase, [A|B], [T1|Q1], CaseArrivee, NBGrainesRestantes):- 
+																								T1 is A+1,
+																								N is NBGrainesCase -1,
+																								Case2 is Case-1,
+																								distribuerSurPlateau(1, Case2, N, B, Q1, CaseArrivee, NBGrainesRestantes).
+
+/* faire un prédicat pour la première fois où on renverse, pour les autres fois ne pas renverser, quand c'est fini re-renverser. */
