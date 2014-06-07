@@ -1,0 +1,12 @@
+distribuerSurPlateau(1, Case,0, L1, L1,CaseArrivee, N):- CaseArrivee is Case,N is 0, !.
+distribuerSurPlateau(1,Case,NBGrainesCase, [],[],CaseArrivee, N):-  CaseArrivee is -99, N is NBGrainesCase,! .
+distribuerSurPlateau(1, 6,NBGrainesCase, [T|Q], [T3|Q3],CaseArrivee, N) :- renverser([T|Q],[T1|Q1]),
+							T2 is T1+1,
+							N2 is NBGrainesCase -1, 
+							distribuerSurPlateau(1, 5,N2, Q1, Q2,CaseArrivee, N),
+							renverser([T2|Q2], [T3|Q3]), !.
+												
+distribuerSurPlateau(1, Case,NBGrainesCase, [T|Q], [T1|Q1],CaseArrivee, N) :- Case2 is Case -1,
+							T1 is T +1,
+							N2 is NBGrainesCase -1, 
+							distribuerSurPlateau(1,Case2,N2, Q, Q1,CaseArrivee, N).
