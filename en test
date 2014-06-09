@@ -6,15 +6,34 @@ renverser([],[]).
 renverser([T|Q],R):-renverser(Q,QR), concat(QR,[T], R).
 nieme(1,[X|_],X) :- !.
 nieme(N,[_|R],X) :- N1 is N-1, nieme(N1,R,X). %N : le numéro de la case, deuxième argument : liste à tranmettre, X : le résultat
+compte([],0).
+compte([_|R],N) :- compte(R,N1), N is N1+1, N>0.
 
-distribuerSurPlateau(0, Case, NBGrainesCase, PJ1, PJ1, CaseArrivee, Nbr):- NBGrainesCase == 0, CaseArrivee is Case, Nbr is NBGrainesCase, !.
+affichePlateau(P1,P2):- write('Joueur1 :'), write(P1), nl, write('Joueur2 :'), write(P2), nl.
+affichePlateau(P2,P1):- write('Joueur1 :'), renverser(P2, NP2), write(NP2), nl,  write('Joueur 2 :'), write(P1), nl.
+nombreGrainesDansCase(Case,PJ1, NBGraines):- nieme(Case,PJ1, NBGraines).
+siPremiereDistributionPossible(J1, J2, PJ1, PJ2, PJ1Fin, PJ2Fin, Case, NBGrainesCase, GrainesRamassees):- PJ2 \= [0,0,0,0,0,0].
+siPremiereDistributionPossible(J1, J2, PJ1, PJ2, PJ1Fin, PJ2Fin, Case, NBGrainesCase, GrainesRamassees):- nombreGrainesDansCase(Case,PJ1, NBGrainesCase), 6-Case < NBGrainesCase.
+
+ajouterUneGraineCase(Case,[],[], NumCase).
+ajouterUneGraineCase(Case,[H|T],[X|Y], NumCase):-
+N is NumCase +1,
+N= Case,
+ajouterUneGraineCase(Case,T,Y, N),
+X is H+1.
+ajouterUneGraineCase(Case,[H|T],[H|Y], NumCase):- N is NumCase +1, N \= Case,
+ajouterUneGraineCase(Case,T,Y, N).
+
+
+
+distribuerSurPlateau(0, Case, NBGrainesCase, PJ1, PJ1, CaseArrivee, Nbr):- NBGrainesCase == 0, compte(PJ1, X), CaseArrivee is 6 - X, Nbr is NBGrainesCase,  !.
 
 distribuerSurPlateau(0, Case, NBGrainesCase, [], [], CaseArrivee,NBGrainesRestantes ):- CaseArrivee is -90, NBGrainesRestantes is NBGrainesCase, !.
 
 distribuerSurPlateau(0, Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):- Case = 1,
 																								T1 is 0,
 																								Case2 is Case-1,
-distribuerSurPlateau(0, Case2, T, Q, Q1, CaseArrivee, NBGrainesRestantes).
+																								distribuerSurPlateau(0, Case2, T, Q, Q1, CaseArrivee, NBGrainesRestantes).
 
 distribuerSurPlateau(0, Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):- Case > 1,
 																								Case2 is Case-1,
@@ -31,7 +50,7 @@ distribuerSurPlateau(0, Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrai
 																								distribuerSurPlateau(0, Case2, N, Q, Q1, CaseArrivee, NBGrainesRestantes).
 
 
-distribuerSurPlateau(1, Case,0, L1, L1,CaseArrivee, N):- CaseArrivee is Case,N is 0, !.
+distribuerSurPlateau(1, Case,0, L1, L1,CaseArrivee, N):- CaseArrivee is Case+1,N is 0, !.
 distribuerSurPlateau(1,Case,NBGrainesCase, [],[],CaseArrivee, N):-  CaseArrivee is -99, N is NBGrainesCase,! .
 distribuerSurPlateau(1, 6,NBGrainesCase, [T|Q], [T3|Q3],CaseArrivee, N) :- renverser([T|Q],[T1|Q1]),
 							T2 is T1+1,
@@ -44,7 +63,7 @@ distribuerSurPlateau(1, Case,NBGrainesCase, [T|Q], [T1|Q1],CaseArrivee, N) :- Ca
 							N2 is NBGrainesCase -1, 
 							distribuerSurPlateau(1,Case2,N2, Q, Q1,CaseArrivee, N).
 
-calculNombreDeGrainesRamassees(J1, Case, PJ2Avant, PJ2Fin, 7, GrainesRamassees) :- GrainesRamassees is 0, !.
+calculNombreDeGrainesRamassees(J1, 7, [], [], CaseArrivee, GrainesRamassees) :- GrainesRamassees is 0, !.
 calculNombreDeGrainesRamassees(J1, Case, [T|Q], [T|Q], CaseArrivee, GrainesRamassees) :- CaseArrivee =< Case,
 																						T\=2, T\=3,
 																						GrainesRamassees is 0, !.
@@ -53,21 +72,48 @@ calculNombreDeGrainesRamassees(J1, Case, [T|Q], [T|Q], CaseArrivee, GrainesRamas
 calculNombreDeGrainesRamassees(J1, Case, [T|Q], [A|B], CaseArrivee, GrainesRamassees) :- Case < CaseArrivee,
 																						A is T,
 																						Case2 is Case +1,
-calculNombreDeGrainesRamassees(J1,Case2, Q, B, CaseArrivee, GrainesRamassees), !.
+																						calculNombreDeGrainesRamassees(J1,Case2, Q, B, CaseArrivee, GrainesRamassees), !.
 calculNombreDeGrainesRamassees(J1, Case, [T|Q], [A|B], CaseArrivee, GrainesRamassees) :- T>1,
 																						T<4,
 																						Case2 is Case +1,
 																						A is 0,
 																						calculNombreDeGrainesRamassees(J1,Case2, Q, B, CaseArrivee, X),
-																						GrainesRamassees is T + X.
+																						GrainesRamassees is T + X,!.
 %ON CONSIDERE QU'ON A DEJA VERIFIE SI LA DISTRIBUTION EST POSSIBLE !
 
-tourPlateau(PJ1, PJ2, Case, NewPJ1, NewPJ2, NBGrainesRamassees):- write('icile debut'), distribuerSurPlateau(0, Case,NombreDeGrainesCase,PJ1, NewPJ1, CaseArrivee, NBGrainesRestantes), CaseArrivee = -90, 
-																distribuerSurPlateau(1, 6,NBGrainesRestantes,PJ2, NewPJ2, CaseArrivee2, NBGrainesRestantes2), CaseArrivee2 = -99,write('JE SUIS LAA'),
-																tourPlateau(NewPJ1, NewPJ2, 0, NewNewPJ1, NewNewPJ2, NBGrainesRamassees).
-tourPlateau(PJ1, PJ2, Case, NewPJ1, NewPJ2, NBGrainesRamassees):-write('predicat simple'), distribuerSurPlateau(0, Case,NombreDeGrainesCase,PJ1, NewPJ1, CaseArrivee, NBGrainesRestantes), CaseArrivee>0,GrainesRamassees is 0,!.
-tourPlateau(PJ1, PJ2, Case, NewPJ1, NewPJ2, NBGrainesRamassees):- write('3EME '),  distribuerSurPlateau(1, 6, NombreDeGrainesCase,PJ2, NewPJ2, CaseArrivee, NBGrainesRestantes), CaseArrivee>0,calculNombreDeGrainesRamassees(J2, 1, PJ2, NewPJ2, CaseArrivee, GrainesRamassees),!.
-
+tourPlateau(Joueur, PJ1, PJ2, Case, NewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- Joueur = 0, write('icile debut'), distribuerSurPlateau(Joueur, Case,NombreDeGrainesCase,PJ1, NewPJ1, CaseArrivee, GrainesMain), CaseArrivee<0, 
+																					tourPlateau(1, NewPJ1, PJ2, Case, NewNewPJ1, NewPJ2, NBGrainesRamassees,GrainesMain).
+tourPlateau(Joueur, PJ1, PJ2, Case, NewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- Joueur = 1, write('icile debut'), distribuerSurPlateau(Joueur, 6, GrainesMain,PJ2, NewPJ2, CaseArrivee, NBGrainesRestantes), CaseArrivee<0, 
+																					tourPlateau(0, PJ1, NewPJ2, Case, NewPJ1, NewNewPJ2, NBGrainesRamassees, NBGrainesRestantes).																					
+tourPlateau(0,PJ1, PJ2, Case, NewPJ1, PJ2, NBGrainesRamassees, GrainesMain):-write('predicat simple'), distribuerSurPlateau(0, Case,GrainesMain,PJ1, NewPJ1, CaseArrivee, NBGrainesRestantes), CaseArrivee>=0,NBGrainesRamassees is 0,!.
+tourPlateau(1, PJ1, PJ2, Case, NewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- write('3EME '),  distribuerSurPlateau(1, 6, GrainesMain,PJ2, NewNewPJ2, CaseArrivee, NBGrainesRestantes), CaseArrivee>=0,write(CaseArrivee),calculNombreDeGrainesRamassees(J2, 1, NewNewPJ2, NewPJ2, CaseArrivee,  NBGrainesRamassees), !.
+faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- write('rentrez le numero de la case que vous voulez jouer'),read(X), 
+												tourPlateau(0,PJ1, PJ2, X, NewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain),
+												SCOREJ12 is SCOREJ1 + NBGrainesRamassees,
+												nl,
+												affichePlateau(NewPJ1, NewPJ2),
+												nl,
+												write('Score joueur 1 :'),
+												write(SCOREJ12),
+												nl,
+												write('Score joueur 2 :'),
+												write(SCOREJ2),	
+												nl,
+												faireJouerJoueur(NewPJ1, NewPJ2, SCOREJ12, SCOREJ2, 1).
+faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- write('rentrez le numero de la case que vous voulez jouer'),read(X), 
+												
+												tourPlateau(0,PJ2, PJ1, X, NewPJ2, NewPJ1, NBGrainesRamassees, GrainesMain),
+												SCOREJ22 is SCOREJ2 + NBGrainesRamassees,
+												nl,
+												affichePlateau(NewPJ1, NewPJ2),
+												nl,
+												write('Score joueur 1 :'),
+												write(SCOREJ1),
+												nl,
+												write('Score joueur 2 :'),
+												write(SCOREJ22),	
+												nl,
+												faireJouerJoueur(NewPJ1, NewPJ2, SCOREJ1, SCOREJ22, 0).												
 
 %NE PAS OUBLIER DE FAIRE RENVERSER LES PLATEAUX !!
 %fairejouerjoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- write('rentrez le numero de la case que vous voulez jouer'),read(X), nieme(X, PJ1, NombreDeGrainesCase), distribuerSurPlateau(0, X,NombreDeGrainesCase,PJ1, NewPJ1, CaseArrivee, NBGrainesRestantes), fairejouerjoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 1).
