@@ -85,9 +85,9 @@ calculNombreDeGrainesRamassees(J1, Case, [T|Q], [A|B], CaseArrivee, GrainesRamas
 																						GrainesRamassees is T + X.
 %ON CONSIDERE QU'ON A DEJA VERIFIE SI LA DISTRIBUTION EST POSSIBLE !
 
-tourPlateau(Joueur, PJ1, PJ2, Case, NewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- Joueur = 0, write('icile debut'), distribuerSurPlateau(Joueur, Case,NombreDeGrainesCase,PJ1, NewPJ1, CaseArrivee, GrainesMain), CaseArrivee<0, 
-																					tourPlateau(1, NewPJ1, PJ2, Case, NewNewPJ1, NewPJ2, NBGrainesRamassees,GrainesMain).
-tourPlateau(Joueur, PJ1, PJ2, Case, NewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- Joueur = 1, write('icile debut'), distribuerSurPlateau(Joueur, 6, GrainesMain,PJ2, NewPJ2, CaseArrivee, NBGrainesRestantes), CaseArrivee<0, 
+tourPlateau(0, PJ1, PJ2, Case, NewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- write('icile debut'), distribuerSurPlateau(Joueur, Case,NombreDeGrainesCase,PJ1, NewPJ1, CaseArrivee, GrainesMain), CaseArrivee<0, 
+																				tourPlateau(1, NewPJ1, PJ2, Case, NewNewPJ1, NewPJ2, NBGrainesRamassees,GrainesMain).
+tourPlateau(1, PJ1, PJ2, Case, NewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- write('icile debut'), distribuerSurPlateau(Joueur, 6, GrainesMain,PJ2, NewPJ2, CaseArrivee, NBGrainesRestantes), CaseArrivee<0, 
 																					tourPlateau(0, PJ1, NewPJ2, Case, NewPJ1, NewNewPJ2, NBGrainesRamassees, NBGrainesRestantes).																					
 tourPlateau(0,PJ1, PJ2, Case, NewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):-write('predicat simple'), distribuerSurPlateau(0, Case,GrainesMain,PJ1, NewPJ1, CaseArrivee, NBGrainesRestantes), CaseArrivee>=0,NBGrainesRamassees is 0,!.
 tourPlateau(1, PJ1, PJ2, Case, NewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- write('3EME '),  distribuerSurPlateau(1, 6, GrainesMain,PJ2, NewNewPJ2, CaseArrivee, NBGrainesRestantes), CaseArrivee>=0,calculNombreDeGrainesRamassees(J2, 1, NewNewPJ2, NewPJ2, CaseArrivee,  NBGrainesRamassees), !.
