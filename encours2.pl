@@ -97,7 +97,7 @@ distribuerSurPlateau2(0, Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGra
 distribuerSurPlateau2(0, Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):- Case = 1,
 																								T1 is 0,
 																								Case2 is Case-1,
-																								distribuerSurPlateau2(0, Case2, T, Q, Q1, CaseArrivee, NBGrainesRestantes).
+																								distribuerSurPlateau2(0, Case2, NBGrainesCase, Q, Q1, CaseArrivee, NBGrainesRestantes).
 distribuerSurPlateau2(0, Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):- Case < 1,
 																								T1 is T+1,
 																								N is NBGrainesCase -1,
@@ -114,8 +114,8 @@ tourPlateau(Joueur, PJ1, PJ2, Case, NewPJ1, NewNewPJ2, NBGrainesRamassees, Grain
 tourPlateau(0,PJ1, PJ2, Case, NewPJ1, PJ2, NBGrainesRamassees, GrainesMain):-write('predicat simple'), distribuerSurPlateau(0, Case,GrainesMain,PJ1, NewPJ1, CaseArrivee, NBGrainesRestantes), CaseArrivee>=0,NBGrainesRamassees is 0,!.
 tourPlateau(1, PJ1, PJ2, Case, PJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- write('3EME '), distribuerSurPlateau(1, 6, GrainesMain,PJ2, NewNewPJ2, CaseArrivee, NBGrainesRestantes), CaseArrivee>=0,write(CaseArrivee),calculNombreDeGrainesRamassees(J2, 1, NewNewPJ2, NewPJ2, CaseArrivee, NBGrainesRamassees), !.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-tourPlateau2(Joueur, PJ1, PJ2, Case, NewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- Joueur = 0, write('tourPlateau2 0'), distribuerSurPlateau2(0, Case,GrainesMain,PJ1, NewPJ1, CaseArrivee, NBGrainesRestantes), CaseArrivee<0,
-																						tourPlateau(1, NewPJ1, PJ2, Case, NewNewPJ1, NewPJ2, NBGrainesRamassees,GrainesMain).
+tourPlateau2(Joueur, PJ1, PJ2, Case, NewNewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- Joueur = 0, write('tourPlateau2 0'), distribuerSurPlateau2(0, Case,GrainesMain,PJ1, NewPJ1, CaseArrivee, NBGrainesRestantes), CaseArrivee<0,
+																						tourPlateau(1, NewPJ1, PJ2, Case, NewNewPJ1, NewPJ2, NBGrainesRamassees,NBGrainesRestantes).
 tourPlateau2(0,PJ1, PJ2, Case, NewPJ1, PJ2, NBGrainesRamassees, GrainesMain):-write('hop'), distribuerSurPlateau2(0, Case,GrainesMain,PJ1, NewPJ1, CaseArrivee, NBGrainesRestantes), CaseArrivee>=0,NBGrainesRamassees is 0,!.
 
 faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- 	nl,
