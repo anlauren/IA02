@@ -13,6 +13,8 @@ awale:-  nl,
 	nl,
 	write('2: jouer contre IA'),
 	nl,
+	write('3: IA vs IA'),
+	nl,
 	write('entrez le numéro correspondant à votre choix'),
 	nl,
 	read(Choix),
@@ -21,10 +23,11 @@ awale:-  nl,
 	write(Choix),
 	nl,
 	lancerjeu(Choix).
-
+	
 
 lancerjeu(1):-commencerjeu,!.
 lancerjeu(2):-ia_commencerjeu,!.
+lancerjeu(3):-iaia_commencerjeu,!.
 lancerjeu(_):-write('Vous avez mal choisi'), awale.
 
 %%%%%%%%%%%%%%%%%%% RETOURNE LE MAX D'UNE LISTE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -51,6 +54,7 @@ retourne_Pos(Val,Pos, [T|Q]):- retourne_Pos(Val,Pos, Q).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 affichePlateau(P1,P2):- write('Son Plateau    :'), write(P2), nl, write('votre Plateau  :'), write(P1), nl.
+affichePlateau2(P1,P2):- write('Plateau Ordi 1   :'), write(P2), nl, write('Plateau Ordi 2   :'), write(P1), nl.
 % affichePlateau(P2,P1):- write('Joueur1 :'), renverser(P2, NP2), write(NP2), nl, write('Joueur 2 :'), write(P1), nl.
 nombreGrainesDansCase(Case,PJ1, NBGraines):- nieme(Case,PJ1, NBGraines).
 siPremiereDistributionPossible( PJ1, PJ2, Case, NBGrainesCase):- PJ2 \= [0,0,0,0,0,0],nieme(Case,PJ1, X), X\=0, Case>=1, Case=<6,!.
@@ -281,17 +285,16 @@ ia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- 	nl, \+partiefinie(SCOREJ1
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% GAGNANT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-partiefinie(SCOREJ1, SCOREJ2):- SCOREJ2>=25, write('Félicitations, Joueur2 vous avez gagné!').
-partiefinie(SCOREJ1, SCOREJ2):- SCOREJ1>=25, write('Félicitations, Joueur1 vous avez gagné!').
-%ça écrit deux fois le prédicat snif
+partiefinie(SCOREJ1, SCOREJ2):- SCOREJ2>=25, write('Félicitations, Joueur2 vous avez gagné!'), read(X).
+partiefinie(SCOREJ1, SCOREJ2):- SCOREJ1>=25, write('Félicitations, Joueur1 vous avez gagné!'), read(X).
+%faudrait peut être que ça s'arrete un jour autrement qu avec read
 %et ce foutu cycle?
 
 
 
 
-%%%%%%%%%%%%%%%%%%%%% IA VS IA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%ça ne marche pas du tout
-iaia_commencerjeu:- affichePlateau([4,4,4,4,4,4],[4,4,4,4,4,4]), iaia_faireJouerJoueur([4,4,4,4,4,4],[4,4,4,4,4,4],0,0,0).
+%%%%%%%%%%%%%%%%%%%%% IA VS IA %%%%%%%%%%%%%%%%%%%%%%%%%%%
+iaia_commencerjeu:- affichePlateau2([4,4,4,4,4,4],[4,4,4,4,4,4]), iaia_faireJouerJoueur([4,4,4,4,4,4],[4,4,4,4,4,4],0,0,0).
 
 iaia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- 	nl,
 													write('Ordinateur 1 joue'),nl,
@@ -299,6 +302,9 @@ iaia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- 	nl,
 													siPremiereDistributionPossible( PJ1, PJ2, X, NBGrainesCase),
 													tourPlateau(0,PJ1, PJ2, X, NewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain),
 													SCOREJ12 is SCOREJ1 + NBGrainesRamassees,
+nl,
+													affichePlateau2(NewPJ1, NewPJ2),
+													nl,
 													write('Score ordi 1 :'),
 													write(SCOREJ12),
 													nl,
@@ -308,17 +314,20 @@ iaia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- 	nl,
 													renverser(NewPJ1, InvPJ1),
 													renverser(NewPJ2, InvPJ2),
 \+partiefinie(SCOREJ12,SCOREJ2),
-													iaia_faireJouerJoueur(InvPJ1, InvPJ2, SCOREJ1, SCOREJ22, 1).
-iaia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- 	nl, \+partiefinie(SCOREJ1,SCOREJ2),
-				
-													write('Votre coup n est pas possible, veuillez rejouer'),
-													iaia_faireJouerJoueur(PJ1,PJ2,SCOREJ1,SCOREJ2,0).													
+													iaia_faireJouerJoueur(InvPJ1, InvPJ2, SCOREJ12, SCOREJ2, 1).
+%iaia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- 	nl, \+partiefinie(SCOREJ1,SCOREJ2),
+			
+													%write('Votre coup n est pas possible, veuillez rejouer'),
+													%iaia_faireJouerJoueur(PJ1,PJ2,SCOREJ1,SCOREJ2,0).													
 iaia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl,
 													write('Ordinateur 2 joue'),nl,
 													choisiCaseIA(PJ1, PJ2, X),
 													siPremiereDistributionPossible( PJ2, PJ1, X, NBGrainesCase),
 													tourPlateau(0,PJ2, PJ1, X, NewPJ2, NewPJ1, NBGrainesRamassees, GrainesMain),
 													SCOREJ22 is SCOREJ2 + NBGrainesRamassees,
+nl,
+												affichePlateau2(NewPJ2, NewPJ1),
+													nl,
 													write('Score ordi 1 :'),
 													write(SCOREJ1),
 													nl,
@@ -330,8 +339,8 @@ iaia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl,
 \+partiefinie(SCOREJ1,SCOREJ22),
 													iaia_faireJouerJoueur(InvPJ1, InvPJ2, SCOREJ1, SCOREJ22, 0).
 													
-iaia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- 	nl, \+partiefinie(SCOREJ1,SCOREJ2),
+%iaia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- 	nl, \+partiefinie(SCOREJ1,SCOREJ2),
 				
-													write('Votre coup n est pas possible, veuillez rejouer'),
-													iaia_faireJouerJoueur(PJ1,PJ2,SCOREJ1,SCOREJ2,1).	
-
+													%write('Votre coup n est pas possible, veuillez rejouer')
+													%iaia_faireJouerJoueur(PJ1,PJ2,SCOREJ1,SCOREJ2,1).
+			%faudrait peut être qu il souffle de temps en temps
