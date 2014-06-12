@@ -288,8 +288,8 @@ ia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- 	nl, \+partiefinie(SCOREJ1
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% GAGNANT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-partiefinie(SCOREJ1, SCOREJ2):- SCOREJ2>=25, write('Félicitations, Joueur2 vous avez gagné!'), read(X).
-partiefinie(SCOREJ1, SCOREJ2):- SCOREJ1>=25, write('Félicitations, Joueur1 vous avez gagné!'), read(X).
+partiefinie(SCOREJ1, SCOREJ2):- SCOREJ2>=25, write('Félicitations, Joueur2 vous avez gagné!'), read(X),!.
+partiefinie(SCOREJ1, SCOREJ2):- SCOREJ1>=25, write('Félicitations, Joueur1 vous avez gagné!'), read(X),!.
 %faudrait peut être que ça s'arrete un jour autrement qu avec read
 %et ce foutu cycle?
 
