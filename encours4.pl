@@ -285,3 +285,53 @@ partiefinie(SCOREJ1, SCOREJ2):- SCOREJ2>=25, write('Félicitations, Joueur2 vous
 partiefinie(SCOREJ1, SCOREJ2):- SCOREJ1>=25, write('Félicitations, Joueur1 vous avez gagné!').
 %ça écrit deux fois le prédicat snif
 %et ce foutu cycle?
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%% IA VS IA %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%ça ne marche pas du tout
+iaia_commencerjeu:- affichePlateau([4,4,4,4,4,4],[4,4,4,4,4,4]), iaia_faireJouerJoueur([4,4,4,4,4,4],[4,4,4,4,4,4],0,0,0).
+
+iaia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- 	nl,
+													write('Ordinateur 1 joue'),nl,
+													choisiCaseIA(PJ1, PJ2, X), %ou le contraire
+													siPremiereDistributionPossible( PJ1, PJ2, X, NBGrainesCase),
+													tourPlateau(0,PJ1, PJ2, X, NewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain),
+													SCOREJ12 is SCOREJ1 + NBGrainesRamassees,
+													write('Score ordi 1 :'),
+													write(SCOREJ12),
+													nl,
+													write('Score ordi 2 :'),
+													write(SCOREJ2),
+													nl,
+													renverser(NewPJ1, InvPJ1),
+													renverser(NewPJ2, InvPJ2),
+\+partiefinie(SCOREJ12,SCOREJ2),
+													iaia_faireJouerJoueur(InvPJ1, InvPJ2, SCOREJ1, SCOREJ22, 1).
+iaia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- 	nl, \+partiefinie(SCOREJ1,SCOREJ2),
+				
+													write('Votre coup n est pas possible, veuillez rejouer'),
+													iaia_faireJouerJoueur(PJ1,PJ2,SCOREJ1,SCOREJ2,0).													
+iaia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl,
+													write('Ordinateur 2 joue'),nl,
+													choisiCaseIA(PJ1, PJ2, X),
+													siPremiereDistributionPossible( PJ2, PJ1, X, NBGrainesCase),
+													tourPlateau(0,PJ2, PJ1, X, NewPJ2, NewPJ1, NBGrainesRamassees, GrainesMain),
+													SCOREJ22 is SCOREJ2 + NBGrainesRamassees,
+													write('Score ordi 1 :'),
+													write(SCOREJ1),
+													nl,
+													write('Score ordi 2 :'),
+													write(SCOREJ22),
+													nl,
+													renverser(NewPJ1, InvPJ1),
+													renverser(NewPJ2, InvPJ2),
+\+partiefinie(SCOREJ1,SCOREJ22),
+													iaia_faireJouerJoueur(InvPJ1, InvPJ2, SCOREJ1, SCOREJ22, 0).
+													
+iaia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- 	nl, \+partiefinie(SCOREJ1,SCOREJ2),
+				
+													write('Votre coup n est pas possible, veuillez rejouer'),
+													iaia_faireJouerJoueur(PJ1,PJ2,SCOREJ1,SCOREJ2,1).	
+
