@@ -7,6 +7,26 @@ nieme(N,[_|R],X) :- N1 is N-1, nieme(N1,R,X). %N : le numéro de la case, deuxi�
 compte([],0).
 compte([_|R],N) :- compte(R,N1), N is N1+1, N>0.
 
+%%%%%%%%%%%%%%%%%%% MENU %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+awale:-  nl, 
+	write('1: jouer à deux joueurs'),
+	nl,
+	write('2: jouer contre IA'),
+	nl,
+	write('entrez le numéro correspondant à votre choix'),
+	nl,
+	read(Choix),
+	nl,
+	write('votre choix est'), 
+	write(Choix),
+	nl,
+	lancerjeu(Choix).
+	
+
+lancerjeu(1):-commencerjeu,!.
+lancerjeu(2):-ia_commencerjeu,!.
+lancerjeu(_):-write('Vous avez mal choisi'), awale.
+
 
 %%%%%%%%%%%%%%%%%%% RETOURNE LE MAX D'UNE LISTE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %retourne_Max(Max, Sommet, Liste)
