@@ -7,6 +7,25 @@ nieme(N,[_|R],X) :- N1 is N-1, nieme(N1,R,X). %N : le numéro de la case, deuxi�
 compte([],0).
 compte([_|R],N) :- compte(R,N1), N is N1+1, N>0.
 
+%%%%%%%%%%%%%%%%%%% MENU %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+awale:-  nl, 
+	write('1: jouer à deux joueurs'),
+	nl,
+	write('2: jouer contre IA'),
+	nl,
+	write('entrez le numéro correspondant à votre choix'),
+	nl,
+	read(Choix),
+	nl,
+	write('votre choix est'), 
+	write(Choix),
+	nl,
+	lancerjeu(Choix).
+
+
+lancerjeu(1):-commencerjeu,!.
+lancerjeu(2):-ia_commencerjeu,!.
+lancerjeu(_):-write('Vous avez mal choisi'), awale.
 
 %%%%%%%%%%%%%%%%%%% RETOURNE LE MAX D'UNE LISTE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %retourne_Max(Max, Sommet, Liste)
@@ -260,30 +279,9 @@ ia_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- 	nl, \+partiefinie(SCOREJ1
 													write('Votre coup n est pas possible, veuillez rejouer'),
 													ia_faireJouerJoueur(PJ1,PJ2,SCOREJ1,SCOREJ2,1).	
 
-
-
-awale:-  nl, 
-	write('1: jouer à deux joueurs'),
-	nl,
-	write('2: jouer contre IA'),
-	nl,
-	write('entrez le numéro correspondant à votre choix'),
-	nl,
-	read(Choix),
-	nl,
-	write('votre choix est'), 
-	write(Choix),
-	nl,
-	lancerjeu(Choix).
-	
-
-lancerjeu(1):-commencerjeu,!.
-lancerjeu(2):-ia_commencerjeu,!.
-lancerjeu(_):-write('Vous avez mal choisi'), awale.
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%% GAGNANT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 partiefinie(SCOREJ1, SCOREJ2):- SCOREJ2>=25, write('Félicitations, Joueur2 vous avez gagné!').
 partiefinie(SCOREJ1, SCOREJ2):- SCOREJ1>=25, write('Félicitations, Joueur1 vous avez gagné!').
 %ça écrit deux fois le prédicat snif
+%et ce foutu cycle?
