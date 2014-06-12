@@ -8,26 +8,29 @@ compte([],0).
 compte([_|R],N) :- compte(R,N1), N is N1+1, N>0.
 
 %%%%%%%%%%%%%%%%%%% MENU %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-awale:-  nl, 
-	write('1: jouer à deux joueurs'),
-	nl,
-	write('2: jouer contre IA'),
-	nl,
-	write('3: IA vs IA'),
-	nl,
-	write('entrez le numéro correspondant à votre choix'),
-	nl,
-	read(Choix),
-	nl,
-	write('votre choix est'), 
-	write(Choix),
-	nl,
-	lancerjeu(Choix).
-	
+awale:- nl,
+write('1: jouer à deux joueurs'),
+nl,
+write('2: jouer contre IA'),
+nl,
+write('3: IA vs IA'),
+nl,
+write('4: jouer contre IA en étant conseillé'),
+nl,
+write('entrez le numéro correspondant à votre choix'),
+nl,
+read(Choix),
+nl,
+write('votre choix est'),
+write(Choix),
+nl,
+lancerjeu(Choix).
+
 
 lancerjeu(1):-commencerjeu,!.
 lancerjeu(2):-ia_commencerjeu,!.
 lancerjeu(3):-iaia_commencerjeu,!.
+lancerjeu(4):-oh_commencerjeu, !.
 lancerjeu(_):-write('Vous avez mal choisi'), awale.
 
 %%%%%%%%%%%%%%%%%%% RETOURNE LE MAX D'UNE LISTE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -344,3 +347,60 @@ nl,
 													%write('Votre coup n est pas possible, veuillez rejouer')
 													%iaia_faireJouerJoueur(PJ1,PJ2,SCOREJ1,SCOREJ2,1).
 			%faudrait peut être qu il souffle de temps en temps
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%% JE VEUX ETRE CONSEILLE %%%%%%%%%%%%%%%%%%%%%%%%%%%
+oh_commencerjeu:- affichePlateau([4,4,4,4,4,4],[4,4,4,4,4,4]), oh_faireJouerJoueur([4,4,4,4,4,4],[4,4,4,4,4,4],0,0,0).
+oh_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl,
+write('Joueur1, à vous de jouer !'), nl,
+affichePlateau(PJ1,PJ2), nl,
+choisiCaseIA(PJ1, PJ2, Y), nl,
+siPremiereDistributionPossible( PJ1, PJ2, Y, NBGrainesCase), nl,
+
+write('Vous pourriez jouer '), write(Y), write(' par exemple...'), nl,
+write('rentrez le numero de la case que vous voulez jouer'),nl,
+read(X),
+siPremiereDistributionPossible( PJ1, PJ2, X, NBGrainesCase),
+tourPlateau(0,PJ1, PJ2, X, NewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain),
+SCOREJ12 is SCOREJ1 + NBGrainesRamassees,
+nl,
+affichePlateau(NewPJ1, NewPJ2),
+nl,
+write('Score joueur 1 :'),
+write(SCOREJ12),
+nl,
+write('Score joueur 2 :'),
+write(SCOREJ2),
+nl,
+\+partiefinie(SCOREJ12,SCOREJ2),
+renverser(NewPJ1, InvPJ1),
+renverser(NewPJ2, InvPJ2),
+oh_faireJouerJoueur(InvPJ1, InvPJ2, SCOREJ12, SCOREJ2, 1),!.
+oh_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl, \+partiefinie(SCOREJ1,SCOREJ2),
+write('Votre coup n est pas possible, veuillez rejouer'),
+oh_faireJouerJoueur(PJ1,PJ2,SCOREJ1,SCOREJ2,0).
+
+
+oh_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl,
+write('L ordinateur joue !'),nl,
+choisiCaseIA(PJ1, PJ2, X),
+siPremiereDistributionPossible( PJ2, PJ1, X, NBGrainesCase),
+tourPlateau(0,PJ2, PJ1, X, NewPJ2, NewPJ1, NBGrainesRamassees, GrainesMain),
+SCOREJ22 is SCOREJ2 + NBGrainesRamassees,
+write('Score joueur 1 :'),
+write(SCOREJ1),
+nl,
+write('Score joueur 2 :'),
+write(SCOREJ22),
+nl,
+renverser(NewPJ1, InvPJ1),
+renverser(NewPJ2, InvPJ2),
+\+partiefinie(SCOREJ1,SCOREJ22),
+oh_faireJouerJoueur(InvPJ1, InvPJ2, SCOREJ1, SCOREJ22, 0).
+oh_faireJouerJoueur(PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl, \+partiefinie(SCOREJ1,SCOREJ2),
+write('Votre coup n est pas possible, veuillez rejouer'),
+oh_faireJouerJoueur(PJ1,PJ2,SCOREJ1,SCOREJ2,1).
