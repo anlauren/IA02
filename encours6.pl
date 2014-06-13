@@ -7,7 +7,7 @@ nieme(N,[_|R],X) :- N1 is N-1, nieme(N1,R,X). %N : le numéro de la case, deuxi�
 compte([],0).
 compte([_|R],N) :- compte(R,N1), N is N1+1, N>0.
 
-ajoute_element(X, Q2, [T2|Q2]):- T2 is X.
+ajoute_element(X, Q2, [X|Q2]).
 %%%%%%%%%%%%%%%%%%% MENU %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 awale:- nl,
 				write('1: jouer à deux joueurs'),
@@ -360,7 +360,7 @@ iaia_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl,
 														\+partiefinie(SCOREJ1,SCOREJ22),
 														iaia_faireJouerJoueur(LJ1, NewLJ2, InvPJ1, InvPJ2, SCOREJ1, SCOREJ22, 0).
 
-%faudrait peut être quil souffle de temps en temps.
+
 %iaia_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl, \+partiefinie(SCOREJ1,SCOREJ2),
 
 %write('Votre coup n est pas possible, veuillez rejouer')
