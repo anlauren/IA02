@@ -302,12 +302,18 @@ ia_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl,
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% GAGNANT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-partiefinie(SCOREJ1, SCOREJ2):- SCOREJ2>=25, write('Félicitations, Joueur2 vous avez gagné!'), read(X),!.
-partiefinie(SCOREJ1, SCOREJ2):- SCOREJ1>=25, write('Félicitations, Joueur1 vous avez gagné!'), read(X),!.
-%faudrait peut être que ça s'arrete un jour autrement qu avec read
-%et ce foutu cycle?
 
-
+partiefinie(SCOREJ1, SCOREJ2,liste, liste2):- SCOREJ2>=25, write('Félicitations, Joueur2 vous avez gagné!'), read(X),!.
+partiefinie(SCOREJ1, SCOREJ2, liste, liste2):- SCOREJ1>=25, write('Félicitations, Joueur1 vous avez gagné!'), read(X),!.
+partiefinie(SCOREJ1, SCOREJ2, liste, liste2):- boucle(liste, liste2), ajouterscore(SCOREJ1, NewScoreJ1, SCOREJ2, NewScoreJ2, PJ1, PJ2), NewScoreJ1>NewScoreJ2, write('Félicitations, Joueur1 vous avez gagné!'), read(X),!.
+partiefinie(SCOREJ1, SCOREJ2, liste, liste2):- boucle(liste, liste2), ajouterscore(SCOREJ1, NewScoreJ1, SCOREJ2, NewScoreJ2, PJ1, PJ2), NewScoreJ2>NewScoreJ1, write('Félicitations, Joueur2 vous avez gagné!'), read(X),!.
+boucle([T|[T|[T|Q]]],[A|[A|[A|B]]]).
+boucle([T|[T2|Q]], [A|[A1|B]]):- boucle([T2|Q], [A1|B]).
+ajouterscore(SCOREJ1, NewScoreJ1, SCOREJ2, NewScoreJ2, [T1|Q1], [T2|Q2]):- ajouterscore(SCOREJ1, NewScoreJ1, SCOREJ2, NewScoreJ2, Q1, Q2), NewScoreJ1 is ScoreJ1+T1, NewScoreJ2 is ScoreJ2+T2.
+ajouterscore(SCOREJ1, NewScoreJ1, SCOREJ2, NewScoreJ2, [], []).
+%ajouter termes dans prédicat partiefinie partout
+%ça met no sans réfléchir!
+%ajouterscore a refaire
 
 
 %%%%%%%%%%%%%%%%%%%%% IA VS IA %%%%%%%%%%%%%%%%%%%%%%%%%%%
