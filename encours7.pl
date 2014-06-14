@@ -1,18 +1,26 @@
+
+%%%%%%%%%%%%%%%%%%%%% PREDICATS PRELIMINAIRES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 concat([], L, L).
 concat([T|Q], L, [T|R]):- concat(Q,L,R).
 
+
+%renverser(A,B) permet d'unifier la liste A inversée avec B
 renverser([],[]).
 renverser([T|Q],R):-renverser(Q,QR), concat(QR,[T], R).
 
+%nieme(N, L, X) N : le numéro de la case, L : liste à tranmettre, X : ce que contient la case N
 nieme(1,[X|_],X) :- !.
-nieme(N,[_|R],X) :- N1 is N-1, nieme(N1,R,X). %N : le numéro de la case, deuxième argument : liste à tranmettre, X : le résultat
+nieme(N,[_|R],X) :- N1 is N-1, nieme(N1,R,X). 
 
+%compte(L, N) renvoie le nombre d'élements N de la liste L
 compte([],0).
 compte([_|R],N) :- compte(R,N1), N is N1+1, N>0.
 
+
 ajoute_element(X, Q2, [X|Q2]).
 
-%nombreGrainesDansCase(Case,PJ1, NBGraines):- nieme(Case,PJ1, NBGraines).
+
 
 %%%%%%%%%%%%%%%%%%% MENU %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 awale:- nl,
@@ -41,71 +49,72 @@ lancerjeu(4):-oh_commencerjeu, !.
 lancerjeu(_):-write('Vous avez mal choisi'), awale.
 
 %%%%%%%%%%%%%%%%%%% RETOURNE LE MAX D'UNE LISTE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%retourne_Max(Max, Sommet, Liste)
+%retourne_Max(Max, Liste) renvoie dans Max la valeur maximale contenue dans Liste
 retourne_Max(Max, [Max]).
 retourne_Max(Max, [T|[T1|Q1]]):- T>=T1, retourne_Max(Max,[T|Q1]).
 retourne_Max(Max, [T|[T1|Q1]]):- T=<T1, retourne_Max(Max, [T1|Q1]).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%% RETOURNE LE MIN D'UNE LISTE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%retourne_Min(Min, Sommet, Liste)
+%retourne_Min(Min, Liste) renvoie dans Min la valeur minimale contenue dans Liste
 retourne_Min(_, [_]). 
 retourne_Min(Min, [T|[T1|Q1]]):- T=<T1, retourne_Min(Min,[T|Q1]).
 retourne_Min(Min, [T|[T1|Q1]]):- T>=T1, retourne_Min(Min, [T1|Q1]).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%% RETOURNE LA POSITION D'UNE VALEUR DANS UNE LISTE %%%%%%%%%%%%%%%%%
-%retourne_Max(Valeur, Position, Liste). Fail si pas dans la liste
+%retourne_Max(Valeur, Position, Liste). retourne dans Position la position de Valeur dans Liste.Fail si pas dans la liste
 
 retourne_Pos(Val,Pos, [T|Q]):- T=Val, compte(Q, X), Pos is 6 - X.
 retourne_Pos(Val,Pos, [_|Q]):- retourne_Pos(Val,Pos, Q).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 affichePlateau(P1,P2):- write('                _____________'),
-			     		nl, 
-					    write('Son Plateau :   '), 
-						plateau(P2), 
-						nl,
-						write('                -------------'),
-						nl,
-						write('Votre Plateau : '), 
-						plateau(P1), 
-						nl,
-						write('                ~~~~~~~~~~~~~'),
-						nl.
+			nl, 
+			write('Son Plateau :   '), 
+			plateau(P2), 
+			nl,
+			write('                -------------'),
+			nl,
+			write('Votre Plateau : '), 
+			plateau(P1), 
+			nl,
+			write('                ~~~~~~~~~~~~~'),
+			nl.
 							
 									
 affichePlateau2(P1,P2):-write('                _____________'),
-			     		nl, 
-						write('Plateau Ordi 1 :'), plateau(P2), 
-						nl,
-						write('                -------------'),
-						nl, 
-						write('Plateau Ordi 2 :'),
-						plateau(P1), 
-						nl,
-						write('                ~~~~~~~~~~~~~'),
-						nl.
+			nl, 
+			write('Plateau Ordi 1 :'), plateau(P2), 
+			nl,
+			write('                -------------'),
+			nl, 
+			write('Plateau Ordi 2 :'),
+			plateau(P1), 
+			nl,
+			write('                ~~~~~~~~~~~~~'),
+			nl.
 
 plateau([]):-write('|').	
 plateau([T|Q]):-write('|'), write(T), plateau(Q).
 
 %%%%%%%%%%%%%%%%%%%% SI PREMIERE DISTRIBUTION POSSIBLE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%siPremiereDistributionPossible(PJ1, PJ2, Case, NBGrainesCase)
+%siPremiereDistributionPossible(PJ1, PJ2, Case, NBGrainesCase) est vrai si: le plateau de l'adversaire n'est pas vide ou si la Case jouée va introduire des graines dans son plateau
+                                                                            
 siPremiereDistributionPossible(PJ1, PJ2, Case):-siPremiereDistributionPossible(PJ1, PJ2, Case, _).
 
 siPremiereDistributionPossible( PJ1, PJ2, Case, _):- PJ2 \= [0,0,0,0,0,0],
-																nieme(Case,PJ1, X), 
-																X\=0, 
-																Case>=1, 
-																Case=<6,!.
+					             nieme(Case,PJ1, X), 
+					             X\=0, 	
+						     Case>=1,														 
+						     Case=<6,!.
 siPremiereDistributionPossible(PJ1, _, Case, NBGrainesCase):- nieme(Case,PJ1, NBGrainesCase), 
-																6-Case < NBGrainesCase, 
-																nieme(Case,PJ1, X), 
-																X\=0, Case>=1, 
-																Case=<6,!.
+							      6-Case < NBGrainesCase, 
+							      nieme(Case,PJ1, X), 
+				                              X\=0, 
+							      Case>=1, 
+							      Case=<6,!.
+							      
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %distribuerSurPlateau(0, Case, NBGrainesCase, PJ1, PJ1, CaseArrivee, NBGrainesRestantes)
