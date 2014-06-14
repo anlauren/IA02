@@ -376,9 +376,14 @@ ia_faireJouerJoueur(LJ1, LJ2,PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl,
 													renverser(NewPJ1, InvPJ1),
 													renverser(NewPJ2, InvPJ2),
 													ia_faireJouerJoueur(NewLJ1, LJ2,InvPJ1, InvPJ2, SCOREJ12, SCOREJ2, 1),!.
+													
+%sleep(1) permet de faire une pause d'une seconde entre les tours pour laisser le temps au joueur de voir le déroulement du jeu													
+													
 ia_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl, \+partiefinie(SCOREJ1,SCOREJ2, LJ1, LJ2, PJ1, PJ2),
 													write('Votre coup n est pas possible, veuillez rejouer'),
 													ia_faireJouerJoueur(LJ1, LJ2, PJ1,PJ2,SCOREJ1,SCOREJ2,0).
+													
+%ici c'est le tour de l'IA cela lance le prédicat choisiCaseIA qui cherche la meilleure solution à jouer.													
 ia_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl,
 													write('L ordinateur joue !'),nl,
 													choisiCaseIA(PJ2, PJ1, X),
@@ -398,15 +403,123 @@ ia_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl,
 													\+partiefinie(SCOREJ1,SCOREJ22, LJ1, NewLJ2, PJ1, PJ2),
 													ia_faireJouerJoueur(LJ1, NewLJ2, InvPJ1, InvPJ2, SCOREJ1, SCOREJ22, 0).
 													
-	%ia_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl, \+partiefinie(SCOREJ1,SCOREJ2, LJ1, LJ2, PJ1, PJ2),
-													%write('Votre coup n est pas possible, veuillez rejouer'),
-													%ia_faireJouerJoueur(PJ1,PJ2,SCOREJ1,SCOREJ2,1).
+
+%%%%%%%%%%%%%%%%%%%%% IA VS IA %%%%%%%%%%%%%%%%%%%%%%%%%%%
+iaia_commencerjeu:- affichePlateau2([4,4,4,4,4,4],[4,4,4,4,4,4]), iaia_faireJouerJoueur([],[],[4,4,4,4,4,4],[4,4,4,4,4,4],0,0,0).
+
+iaia_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl,
+								write('Ordinateur 1 joue'),nl,
+								choisiCaseIA(PJ1, PJ2, X),
+								siPremiereDistributionPossible( PJ1, PJ2, X),
+								ajoute_element(X, LJ1, NewLJ1),
+								tourPlateau(0,PJ1, PJ2, X, NewPJ1, NewPJ2, NBGrainesRamassees, _),
+								SCOREJ12 is SCOREJ1 + NBGrainesRamassees,
+								nl,
+								affichePlateau2(NewPJ1, NewPJ2),
+								nl,
+								write('Score ordi 1 :'),
+								write(SCOREJ12),
+								nl,
+								write('Score ordi 2 :'),
+								write(SCOREJ2),
+								nl,
+								sleep(1),
+								renverser(NewPJ1, InvPJ1),
+								renverser(NewPJ2, InvPJ2),
+								\+partiefinie(SCOREJ12,SCOREJ2, NewLJ1, LJ2, PJ1, PJ2),
+								iaia_faireJouerJoueur(NewLJ1, LJ2, InvPJ1, InvPJ2, SCOREJ12, SCOREJ2, 1).
+	
+iaia_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl,
+														write('Ordinateur 2 joue'),nl,
+														choisiCaseIA(PJ2, PJ1, X),
+														siPremiereDistributionPossible( PJ2, PJ1, X),
+														ajoute_element(X, LJ2, NewLJ2),
+														tourPlateau(0,PJ2, PJ1, X, NewPJ2, NewPJ1, NBGrainesRamassees, _),
+														SCOREJ22 is SCOREJ2 + NBGrainesRamassees,
+														nl,
+														affichePlateau2(NewPJ2, NewPJ1),
+														nl,
+														write('Score ordi 1 :'),
+														write(SCOREJ1),
+														nl,
+														write('Score ordi 2 :'),
+														write(SCOREJ22),
+														nl,
+														sleep(1),
+														renverser(NewPJ1, InvPJ1),
+														renverser(NewPJ2, InvPJ2),
+														\+partiefinie(SCOREJ1,SCOREJ22, LJ1, NewLJ2, PJ1, PJ2),
+														iaia_faireJouerJoueur(LJ1, NewLJ2, InvPJ1, InvPJ2, SCOREJ1, SCOREJ22, 0).
+
+
+%%%%%%%%%%%%%%%%%%%%% JE VEUX ETRE CONSEILLE %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+oh_commencerjeu:- affichePlateau([4,4,4,4,4,4],[4,4,4,4,4,4]), oh_faireJouerJoueur([],[],[4,4,4,4,4,4],[4,4,4,4,4,4],0,0,0).
+
+%choisiCaseIA calcule la meilleure case à jouer et on la conseille au joueur
+oh_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl,
+													write('Joueur1, à vous de jouer !'), nl,
+													affichePlateau(PJ1,PJ2), nl,
+													choisiCaseIA(PJ1, PJ2, Y), nl,
+													siPremiereDistributionPossible( PJ1, PJ2, Y), nl,
+													write('Vous pourriez jouer '), write(Y), write(' par exemple...'), nl,
+													write('rentrez le numero de la case que vous voulez jouer'),nl,
+													read(X),
+													siPremiereDistributionPossible( PJ1, PJ2, X),
+													ajoute_element(X, LJ1, NewLJ1),
+													tourPlateau(0,PJ1, PJ2, X, NewPJ1, NewPJ2, NBGrainesRamassees, _),
+													SCOREJ12 is SCOREJ1 + NBGrainesRamassees,
+													nl,
+													affichePlateau(NewPJ1, NewPJ2),
+													nl,
+													write('Score joueur 1 :'),
+													write(SCOREJ12),
+													nl,
+													write('Score joueur 2 :'),
+													write(SCOREJ2),
+													nl,
+													sleep(1),
+													\+partiefinie(SCOREJ12,SCOREJ2, NewLJ1, LJ2, PJ1, PJ2),
+													renverser(NewPJ1, InvPJ1),
+													renverser(NewPJ2, InvPJ2),
+													oh_faireJouerJoueur(NewLJ1, LJ2, InvPJ1, InvPJ2, SCOREJ12, SCOREJ2, 1),!.
+													
+													
+oh_faireJouerJoueur(LJ1, LJ2,PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl, \+partiefinie(SCOREJ1,SCOREJ2, LJ1, LJ2, PJ1, PJ2),
+															write('Votre coup n est pas possible, veuillez rejouer'),
+															oh_faireJouerJoueur(LJ1, LJ2, PJ1,PJ2,SCOREJ1,SCOREJ2,0).
+
+/Nous avons voulu tester dans cette partie un IA plus faible pour affronter le joueur avec choisiIAfaible
+oh_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl,
+												write('L ordinateur joue !'),nl,
+												choisiIAfaible(PJ2, PJ1, X),
+												siPremiereDistributionPossible( PJ2, PJ1, X),
+												ajoute_element(X, LJ2, NewLJ2),
+												tourPlateau(0,PJ2, PJ1, X, NewPJ2, NewPJ1, NBGrainesRamassees, _),
+												SCOREJ22 is SCOREJ2 + NBGrainesRamassees,
+												write('Score joueur 1 :'),
+												write(SCOREJ1),
+												nl,
+												write('Score joueur 2 :'),
+												write(SCOREJ22),
+												nl,
+												sleep(1),
+												renverser(NewPJ1, InvPJ1),
+												renverser(NewPJ2, InvPJ2),
+												\+partiefinie(SCOREJ1,SCOREJ22, LJ1, NewLJ2, PJ1, PJ2),
+												oh_faireJouerJoueur(LJ1, NewLJ2, InvPJ1, InvPJ2, SCOREJ1, SCOREJ22, 0).
+
+																
+																
+	
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% GAGNANT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%partiefinie(SCOREJ1, SCOREJ2, LJ1, LJ2, PJ1, PJ2)
-
+%partiefinie(SCOREJ1, SCOREJ2, LJ1, LJ2, PJ1, PJ2) permet de tester à chaque tour si les conditions d'une partie finie sont remplies
+%La partie s'arrête si le score d'un des deux joueurs dépasse 25, celui-ci a alors gagné
 partiefinie(_, SCOREJ2,_, _, _, _):- SCOREJ2>=25, write('Félicitations, Joueur2 vous avez gagné!'), read(_),!.
 partiefinie(SCOREJ1, _, _, _, _, _):- SCOREJ1>=25, write('Félicitations, Joueur1 vous avez gagné!'), read(_),!.
+
+%Si la partie cycle chaque joueur récupère les graines qui sont sur son terrain et la partie termine, celui qui a le meilleur score gagne.
 partiefinie(SCOREJ1, SCOREJ2, LJ1, LJ2, PJ1, PJ2):- boucle(LJ1, LJ2), 
 														ajouterscore(SCOREJ1, NewScoreJ1, SCOREJ2, NewScoreJ2, PJ1, PJ2), 
 														NewScoreJ1>NewScoreJ2, 
@@ -417,6 +530,8 @@ partiefinie(SCOREJ1, SCOREJ2, LJ1, LJ2, PJ1, PJ2):- boucle(LJ1, LJ2),
 														NewScoreJ2>NewScoreJ1, 
 														write('Félicitations, Joueur2 vous avez gagné!'), 
 														read(_),!.
+														
+%Si aucun coup n'est possible(c'est-à-dire SiPremiereDistributionPossible échoue pour toutes les cases) la partie termine, chacun récupère les graines de son plateau et celui qui a le meilleur score gagne
 partiefinie(SCOREJ1, SCOREJ2, _, _, PJ1, PJ2):- testsiPremiereDistributionPossible( PJ1, PJ2), 
 														ajouterscore(SCOREJ1, NewScoreJ1, SCOREJ2, NewScoreJ2, PJ1, PJ2), 
 														NewScoreJ2>NewScoreJ1, 
@@ -427,12 +542,17 @@ partiefinie(SCOREJ1, SCOREJ2, _, _, PJ1, PJ2):- testsiPremiereDistributionPossib
 														NewScoreJ2<NewScoreJ1, 
 														write('Félicitations, Joueur1 vous avez gagné!'), 
 														read(_),!.
+														
+%testsiPremiereDistributionPossible( PJ1, PJ2) est vrai si siPremiereDistributionPossible échoue pour toutes les cases														
 testsiPremiereDistributionPossible( PJ1, PJ2):- testsiPremiereDistributionPossible( PJ1, PJ2, 6).
 testsiPremiereDistributionPossible( _,_, 0).
 testsiPremiereDistributionPossible( PJ1, PJ2, Case):- \+siPremiereDistributionPossible( PJ1, PJ2, Case),
 														Case2 is Case-1,
 														testsiPremiereDistributionPossible( PJ1, PJ2, Case2).
 
+
+%boucle(L1, L2) permet de savoir si le jeu cycle, c'est-à-dire si la même série de coup se répète en boucle pour les deux joueurs.
+%Si les joueurs répètent la même série de 6, 5 ou 4 (et du coup c'est valable pour 2 et 3 aussi) coups le programme s'en aperçoit et met fin à la partie.
 boucle(L1, L2) :- compte(L1,X), X>5,compte(L2,Y), Y>5,
 					nieme(1,L1, X1), nieme( 7,L1, Y1), Y1=X1, 
 				   nieme(2,L1, X2), nieme( 8, L1,Y2), Y2=X2, 
@@ -472,131 +592,12 @@ boucle(L1, L2) :- compte(L1,X), X>5,compte(L2,Y), Y>5,
 				   nieme(4,L2,Z4 ), nieme( 8,L2, W4), Z4=W4,!.
 				  
 				  				   
-				   
+%ajouterscore(SCOREJ1, SCOREJ1, SCOREJ2, SCOREJ2, PJ1, PJ2) ajoute aux scores des joueurs les graines de leurs plateaux respectifs				   
 ajouterscore(SCOREJ1, SCOREJ1, SCOREJ2, SCOREJ2, [], []).
 ajouterscore(SCOREJ1, NewScoreJ1, SCOREJ2, NewScoreJ2, [T1|Q1], [T2|Q2]):- 
-																		
-																		 ajouterscore(SCOREJ1, NewNewScoreJ1, SCOREJ2, NewNewScoreJ2, Q1, Q2),
-																		 NewScoreJ1 is NewNewScoreJ1 + T1,
+																		ajouterscore(SCOREJ1, NewNewScoreJ1, SCOREJ2, NewNewScoreJ2, Q1, Q2),
+																		NewScoreJ1 is NewNewScoreJ1 + T1,
 																		 NewScoreJ2 is NewNewScoreJ2 + T2.
 															
 																		
-
-%%%%%%%%%%%%%%%%%%%%% IA VS IA %%%%%%%%%%%%%%%%%%%%%%%%%%%
-iaia_commencerjeu:- affichePlateau2([4,4,4,4,4,4],[4,4,4,4,4,4]), iaia_faireJouerJoueur([],[],[4,4,4,4,4,4],[4,4,4,4,4,4],0,0,0).
-
-iaia_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl,
-								write('Ordinateur 1 joue'),nl,
-								choisiCaseIA(PJ1, PJ2, X),
-								siPremiereDistributionPossible( PJ1, PJ2, X),
-								ajoute_element(X, LJ1, NewLJ1),
-								tourPlateau(0,PJ1, PJ2, X, NewPJ1, NewPJ2, NBGrainesRamassees, _),
-								SCOREJ12 is SCOREJ1 + NBGrainesRamassees,
-								nl,
-								affichePlateau2(NewPJ1, NewPJ2),
-								nl,
-								write('Score ordi 1 :'),
-								write(SCOREJ12),
-								nl,
-								write('Score ordi 2 :'),
-								write(SCOREJ2),
-								nl,
-								sleep(1),
-								renverser(NewPJ1, InvPJ1),
-								renverser(NewPJ2, InvPJ2),
-								\+partiefinie(SCOREJ12,SCOREJ2, NewLJ1, LJ2, PJ1, PJ2),
-								iaia_faireJouerJoueur(NewLJ1, LJ2, InvPJ1, InvPJ2, SCOREJ12, SCOREJ2, 1).
-%iaia_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl, \+partiefinie(SCOREJ1,SCOREJ2),
-
-%write('Votre coup n est pas possible, veuillez rejouer'),
-%iaia_faireJouerJoueur(LJ1, LJ2, PJ1,PJ2,SCOREJ1,SCOREJ2,0).	
-iaia_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl,
-														write('Ordinateur 2 joue'),nl,
-														choisiCaseIA(PJ2, PJ1, X),
-														siPremiereDistributionPossible( PJ2, PJ1, X),
-														ajoute_element(X, LJ2, NewLJ2),
-														tourPlateau(0,PJ2, PJ1, X, NewPJ2, NewPJ1, NBGrainesRamassees, _),
-														SCOREJ22 is SCOREJ2 + NBGrainesRamassees,
-														nl,
-														affichePlateau2(NewPJ2, NewPJ1),
-														nl,
-														write('Score ordi 1 :'),
-														write(SCOREJ1),
-														nl,
-														write('Score ordi 2 :'),
-														write(SCOREJ22),
-														nl,
-														sleep(1),
-														renverser(NewPJ1, InvPJ1),
-														renverser(NewPJ2, InvPJ2),
-														\+partiefinie(SCOREJ1,SCOREJ22, LJ1, NewLJ2, PJ1, PJ2),
-														iaia_faireJouerJoueur(LJ1, NewLJ2, InvPJ1, InvPJ2, SCOREJ1, SCOREJ22, 0).
-
-
-%iaia_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl, \+partiefinie(SCOREJ1,SCOREJ2),
-
-%write('Votre coup n est pas possible, veuillez rejouer'),
-%iaia_faireJouerJoueur(LJ1, LJ2, PJ1,PJ2,SCOREJ1,SCOREJ2,1).
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%% JE VEUX ETRE CONSEILLE %%%%%%%%%%%%%%%%%%%%%%%%%%%
-oh_commencerjeu:- affichePlateau([4,4,4,4,4,4],[4,4,4,4,4,4]), oh_faireJouerJoueur([],[],[4,4,4,4,4,4],[4,4,4,4,4,4],0,0,0).
-oh_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl,
-													write('Joueur1, à vous de jouer !'), nl,
-													affichePlateau(PJ1,PJ2), nl,
-													choisiCaseIA(PJ1, PJ2, Y), nl,
-													siPremiereDistributionPossible( PJ1, PJ2, Y), nl,
-
-													write('Vous pourriez jouer '), write(Y), write(' par exemple...'), nl,
-													write('rentrez le numero de la case que vous voulez jouer'),nl,
-													read(X),
-													siPremiereDistributionPossible( PJ1, PJ2, X),
-													ajoute_element(X, LJ1, NewLJ1),
-													tourPlateau(0,PJ1, PJ2, X, NewPJ1, NewPJ2, NBGrainesRamassees, _),
-													SCOREJ12 is SCOREJ1 + NBGrainesRamassees,
-													nl,
-													affichePlateau(NewPJ1, NewPJ2),
-													nl,
-													write('Score joueur 1 :'),
-													write(SCOREJ12),
-													nl,
-													write('Score joueur 2 :'),
-													write(SCOREJ2),
-													nl,
-													sleep(1),
-													\+partiefinie(SCOREJ12,SCOREJ2, NewLJ1, LJ2, PJ1, PJ2),
-													renverser(NewPJ1, InvPJ1),
-													renverser(NewPJ2, InvPJ2),
-													oh_faireJouerJoueur(NewLJ1, LJ2, InvPJ1, InvPJ2, SCOREJ12, SCOREJ2, 1),!.
-oh_faireJouerJoueur(LJ1, LJ2,PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl, \+partiefinie(SCOREJ1,SCOREJ2, LJ1, LJ2, PJ1, PJ2),
-															write('Votre coup n est pas possible, veuillez rejouer'),
-															oh_faireJouerJoueur(LJ1, LJ2, PJ1,PJ2,SCOREJ1,SCOREJ2,0).
-
-
-oh_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl,
-												write('L ordinateur joue !'),nl,
-												choisiIAfaible(PJ2, PJ1, X),
-												siPremiereDistributionPossible( PJ2, PJ1, X),
-												ajoute_element(X, LJ2, NewLJ2),
-												tourPlateau(0,PJ2, PJ1, X, NewPJ2, NewPJ1, NBGrainesRamassees, _),
-												SCOREJ22 is SCOREJ2 + NBGrainesRamassees,
-												write('Score joueur 1 :'),
-												write(SCOREJ1),
-												nl,
-												write('Score joueur 2 :'),
-												write(SCOREJ22),
-												nl,
-												sleep(1),
-												renverser(NewPJ1, InvPJ1),
-												renverser(NewPJ2, InvPJ2),
-												\+partiefinie(SCOREJ1,SCOREJ22, LJ1, NewLJ2, PJ1, PJ2),
-												oh_faireJouerJoueur(LJ1, NewLJ2, InvPJ1, InvPJ2, SCOREJ1, SCOREJ22, 0).
-oh_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl, \+partiefinie(SCOREJ1,SCOREJ2, LJ1, LJ2, PJ1, PJ2),
-																write('Votre coup n est pas possible, veuillez rejouer'),
-																oh_faireJouerJoueur(LJ1, LJ2, PJ1,PJ2,SCOREJ1,SCOREJ2,1).
-
-																
-																
-											
+										
