@@ -133,10 +133,9 @@ distribuerSurPlateau(0, Case, _, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes
 																							    Case2 is Case-1,
 																								distribuerSurPlateau(0, Case2, T, Q, Q1, CaseArrivee, NBGrainesRestantes).
 %Quand il explore le plateau avant la case de départ ou après que toutes les graines aient été distribuées, il passe à la suite en renvoyant les même valeurs dans le nouveau plateau
-distribuerSurPlateau(0, Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):- Case > 1,
+distribuerSurPlateau(0, Case, NBGrainesCase, [T|Q], [T|Q1], CaseArrivee, NBGrainesRestantes):- Case > 1,
 																								Case2 is Case-1,
-																								T1 is T,
-
+																								distribuerSurPlateau(0, Case2, NBGrainesCase, Q, Q1, CaseArrivee, NBGrainesRestantes),!.
 %Sur les cases où il peut distribuer il ajoute 1 sur le plateau et enlève 1 à NBGrainesCase																						
 distribuerSurPlateau(0, Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):- Case < 1,
 																								T1 is T+1,
@@ -151,7 +150,7 @@ distribuerSurPlateau(0, Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrai
 %s'il n'y a plus rien dans NBGrainesCase  il renvoie la case d'arrivée
 distribuerSurPlateau(1, Case,0, L1, L1,CaseArrivee, 0):- CaseArrivee is Case+1, !.
 
-%s'il reste des graines lorsque tout le plateau a été exploré il renvoie que -99 dans CaseArrivee qui permettra de relancer distribuerSurPlateau dans l'autre plateau													
+%s'il reste des graines lorsque tout le plateau a été exploré il renvoie que -99 dans CaseArrivee qui permettra de relancer distribuerSurPlateau dans l'autre plateau (cf distribuerSurPlateau2)													
 distribuerSurPlateau(1,_,NBGrainesCase, [],[],CaseArrivee, N):- CaseArrivee is -99, 
 							        N is NBGrainesCase,! .
 %Avant de commencer à distribuer sur le plateau adverse on renverse le plateau pour pouvoir distribuer correctement, et on renversera à nouveau après avoir fini la distribution							        
@@ -167,18 +166,25 @@ distribuerSurPlateau(1, Case,NBGrainesCase, [T|Q], [T1|Q1],CaseArrivee, N) :- Ca
 																			  N2 is NBGrainesCase -1,
 																			  distribuerSurPlateau(1,Case2,N2, Q, Q1,CaseArrivee, N).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%																			  
-																			  
-%calculNombreDeGrainesRamassees( Case, [T|Q], [T|Q], CaseArrivee, GrainesRamassees)	renvoie dans GrainesRamassees les graines remportées par le joueur lors de son tour.																		  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+
+%calculNombreDeGrainesRamassees( Case, [T|Q], [T|Q], CaseArrivee, GrainesRamassees)	renvoie dans GrainesRamassees les graines remportées par le joueur lors de son tour et les enleve du plateau.
+
+calculNombreDeGrainesRamassees( L1, L2, CaseArrivee, NBGrainesRamassees):- calculNombreDeGrainesRamassees( 1, L1, L2, CaseArrivee, NBGrainesRamassees).																			  
+		
+%On parcourt tout le plateau, de Case=1 jusqu'à Case=7, il remonte ensuite.
 calculNombreDeGrainesRamassees( 7, [], [], _, GrainesRamassees) :- GrainesRamassees is 0, !.
+
+%une fois qu'on a atteint CaseArrivee on s'arrete lorsque celle ci ou une des suivantes contient autre chose que 2 ou 3 graines, dans ce cas on remonte le prédicat.
 calculNombreDeGrainesRamassees( Case, [T|Q], [T|Q], CaseArrivee, GrainesRamassees) :- CaseArrivee =< Case,
 																					   	 T\=2, T\=3,
 																						 GrainesRamassees is 0, !.
-
+%Tant qu'on a pas atteint CaseArrivee on se contente de renvoyer l'element dans la liste suivante et de passer à la case suivante
 calculNombreDeGrainesRamassees( Case, [T|Q], [A|B], CaseArrivee, GrainesRamassees) :- Case < CaseArrivee,
 																						 A is T,
 																						 Case2 is Case +1,
 																						 calculNombreDeGrainesRamassees(Case2, Q, B, CaseArrivee, GrainesRamassees), !.
+%Si dans la case d'arrivée il y a deux ou trois graines on les ajoute à GrainesRamassees et on vide la case. On passe à la case suivante, et on réitère s'il y a aussi deux ou trois graines sinon cela renvoie au prédicat au-dessus 																						 
 calculNombreDeGrainesRamassees( Case, [T|Q], [A|B], CaseArrivee, GrainesRamassees) :- T>1,
 																						 T<4,
 																						 Case2 is Case +1,
@@ -186,61 +192,71 @@ calculNombreDeGrainesRamassees( Case, [T|Q], [A|B], CaseArrivee, GrainesRamassee
 																						 calculNombreDeGrainesRamassees(Case2, Q, B, CaseArrivee, X),
 																						 GrainesRamassees is T + X,!.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%distribuerSurPlateau2(0, Case, NBGrainesCase, PJ1, PJ1, CaseArrivee, Nbr)
+%distribuerSurPlateau2( Case, NBGrainesCase, PJ1, PJ1, CaseArrivee, Nbr) sert quand on a fait un tour complet lors de la distribution des graines et que l'on retourne sur le plateau du joueur dont c'est le tour.
 
-distribuerSurPlateau2(0, _, NBGrainesCase, PJ1, PJ1, CaseArrivee, Nbr):- NBGrainesCase == 0, 
-																			compte(PJ1, X), 
-																			CaseArrivee is 6 - X, 
-																			Nbr is NBGrainesCase, !.
-distribuerSurPlateau2(0, _, NBGrainesCase, [], [], CaseArrivee,NBGrainesRestantes ):- CaseArrivee is -90, 
+%Quand on a fini de distribuer Nbr et NBGrainesCase sont à 0. On calcule CaseArrivee pour avoir une valeur positive qui signifie que la distribution est terminée
+distribuerSurPlateau2( _, 0, PJ1, PJ1, CaseArrivee, 0):- compte(PJ1, X), 
+														 CaseArrivee is 6 - X, !.
+														 
+%S'il reste encore des graines à la fin de la distribution sur ce plateau CaseArrivee=-90 ce qui permettra de rappeler distribuerSurPlateau sur le plateau de l'adversaire																			
+distribuerSurPlateau2( _, NBGrainesCase, [], [], CaseArrivee,NBGrainesRestantes ):- CaseArrivee is -90, 
 																						 NBGrainesRestantes is NBGrainesCase, !.
-distribuerSurPlateau2(0, Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):- Case>1,
-																								 Case2 is Case-1,
+%ici même avant d'atteindre la case de départ on distribue car il s'agit de la deuxieme distribution																						 
+distribuerSurPlateau2( Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):- Case>1,
+																							 Case2 is Case-1,
 																								 N is NBGrainesCase -1,
 																								 T1 is T+1,
-																								 distribuerSurPlateau2(0, Case2, N, Q, Q1, CaseArrivee, NBGrainesRestantes),!.
-distribuerSurPlateau2(0, Case, NBGrainesCase, [_|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):- Case = 1,
-																								 T1 is 0,
+																								 distribuerSurPlateau2( Case2, N, Q, Q1, CaseArrivee, NBGrainesRestantes),!.
+%les deux prédicats suivants suivent la même logique que pour distribuerSurPlateau(0,...)																								 
+distribuerSurPlateau2( Case, NBGrainesCase, [_|Q], [0|Q1], CaseArrivee, NBGrainesRestantes):- Case = 1,
 																								 Case2 is Case-1,
-																								 distribuerSurPlateau2(0, Case2, NBGrainesCase, Q, Q1, CaseArrivee, NBGrainesRestantes).
-distribuerSurPlateau2(0, Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):- Case < 1,
+																								 distribuerSurPlateau2( Case2, NBGrainesCase, Q, Q1, CaseArrivee, NBGrainesRestantes).
+distribuerSurPlateau2( Case, NBGrainesCase, [T|Q], [T1|Q1], CaseArrivee, NBGrainesRestantes):- Case < 1,
 																								 T1 is T+1,
 																								 N is NBGrainesCase -1,
 																								 Case2 is Case-1,
-																								 distribuerSurPlateau2(0, Case2, N, Q, Q1, CaseArrivee, NBGrainesRestantes).
+																								 distribuerSurPlateau2( Case2, N, Q, Q1, CaseArrivee, NBGrainesRestantes).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-tourPlateau(Joueur, PJ1, PJ2, Case, NewNewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- Joueur = 0, 
+%tourPlateau lance la distribution sur le plateau du joueur, puis lance la distribution sur le plateau sur le plateau suivant si CaseArrivee<0 (signal que la distribution n'est pas terminée)
+tourPlateau(0, PJ1, PJ2, Case, NewNewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- 
 																						  distribuerSurPlateau(0, Case,_,PJ1, NewPJ1, CaseArrivee, GrainesMain), 
 																						  CaseArrivee<0,
 																						  tourPlateau(1, NewPJ1, PJ2, Case, NewNewPJ1, NewPJ2, NBGrainesRamassees,GrainesMain).
-tourPlateau(Joueur, PJ1, PJ2, Case, NewPJ1, NewNewPJ2, NBGrainesRamassees, GrainesMain):- Joueur = 1, 
+tourPlateau(1, PJ1, PJ2, Case, NewPJ1, NewNewPJ2, NBGrainesRamassees, GrainesMain):-  
 																					  	  distribuerSurPlateau(1, 6, GrainesMain,PJ2, NewPJ2, CaseArrivee, NBGrainesRestantes), 
 																						  CaseArrivee<0,
 																						  tourPlateau2(0, PJ1, NewPJ2, Case, NewPJ1, NewNewPJ2, NBGrainesRamassees, NBGrainesRestantes).
+%Lorsque la distribution est terminée tourPlateau définie NBGrainesRamassees comme égale à 0 si cela finit sur le plateau du joueur actif sinon il le calcule et ne se rappelle plus lui-même.																						  
 tourPlateau(0,PJ1, PJ2, Case, NewPJ1, PJ2, NBGrainesRamassees, GrainesMain):-
 																			 distribuerSurPlateau(0, Case,GrainesMain,PJ1, NewPJ1, CaseArrivee, _), 
 																			 CaseArrivee>=0,
 																			 NBGrainesRamassees is 0,!.
 tourPlateau(1,PJ1, PJ2, _, PJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- distribuerSurPlateau(1, 6, GrainesMain,PJ2, NewNewPJ2, CaseArrivee, _), 
 																			  CaseArrivee>=0,
-																			  %write(CaseArrivee),
-																		      calculNombreDeGrainesRamassees( 1, NewNewPJ2, NewPJ2, CaseArrivee, NBGrainesRamassees), !.
+																		      calculNombreDeGrainesRamassees( NewNewPJ2, NewPJ2, CaseArrivee, NBGrainesRamassees), !.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-tourPlateau2(Joueur, PJ1, PJ2, Case, NewNewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):- Joueur = 0, 
-																						   distribuerSurPlateau2(0, Case,GrainesMain,PJ1, NewPJ1, CaseArrivee, NBGrainesRestantes), 
+%Si la distribution des graines arrive sur le plateau du joueur actif c'est tourPlateau2 qui est appelé. Il va appeler distribuerSurPlateau2 avant de rappeler si besoin tourPlateau(1,...)
+tourPlateau2(0, PJ1, PJ2, Case, NewNewPJ1, NewPJ2, NBGrainesRamassees, GrainesMain):-  
+																						   distribuerSurPlateau2( Case,GrainesMain,PJ1, NewPJ1, CaseArrivee, NBGrainesRestantes), 
 																						   CaseArrivee<0,
 																						   tourPlateau(1, NewPJ1, PJ2, Case, NewNewPJ1, NewPJ2, NBGrainesRamassees,NBGrainesRestantes).
-tourPlateau2(0,PJ1, PJ2, Case, NewPJ1, PJ2, NBGrainesRamassees, GrainesMain):-distribuerSurPlateau2(0, Case,GrainesMain,PJ1, NewPJ1, CaseArrivee, _), 
+tourPlateau2(0,PJ1, PJ2, Case, NewPJ1, PJ2, NBGrainesRamassees, GrainesMain):-distribuerSurPlateau2(Case,GrainesMain,PJ1, NewPJ1, CaseArrivee, _), 
 																			  CaseArrivee>=0,
 																			  NBGrainesRamassees is 0,!.
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% MODE DE JEU%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 2 JOUEURS HUMAINS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 commencerjeu:- affichePlateau([4,4,4,4,4,4],[4,4,4,4,4,4]), 
 			   faireJouerJoueur([],[],[4,4,4,4,4,4],[4,4,4,4,4,4],0,0,0).
 
-
+%faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 0) LJ1 et LJ2 gardent en mémoir les coups joués pour permettre de savoir si le jeu cycle (cf partiefinie)
+%il s'agit de l'interface avec l'utilisateur qui appelle les différents prédicats.
+%Il va tester si la partie est finie avant de renverser les plateaux et de faire jouer l'autre joueur.
 faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl,
 															write('Joueur1, à vous de jouer !'), nl,
 															affichePlateau(PJ1,PJ2),
@@ -263,7 +279,7 @@ faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl,
 															renverser(NewPJ1, InvPJ1),
 															renverser(NewPJ2, InvPJ2),
 															faireJouerJoueur(newLJ1, LJ2, InvPJ1, InvPJ2, SCOREJ12, SCOREJ2, 1),!.
-															
+%Si siPremiereDistributionPossible( PJ1, PJ2, X) échoue on relance le prédicat jusqu'à ce que le joueur propose un coup possible.														
 faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl, \+partiefinie(SCOREJ1,SCOREJ2, LJ1, LJ2, PJ1, PJ2),
 															write('Votre coup n est pas possible, veuillez rejouer'),
 															faireJouerJoueur(LJ1, LJ2, PJ1,PJ2,SCOREJ1,SCOREJ2,0).
@@ -321,6 +337,7 @@ explore2(Case, [T|Q], PJ1, PJ2) :- T is -99, Case2 is Case +1, explore2(Case2, Q
 choisiCaseIA(PJ1, PJ2, Case) :- explore1(L ,PJ1, PJ2), retourne_Max(Max, L), retourne_Pos(Max, Case, L).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% IA FAIBLE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%ici l'IA ne calcule que les gains potentiels sans regarder les gains de l'adversaire au tour d'après
 exploref(L, PJ1, PJ2) :- exploref(1, L, PJ1, PJ2).
 exploref(7,[],_, _).
 exploref(Case, [T|Q], PJ1, PJ2) :-
@@ -333,7 +350,7 @@ exploref(Case, [T|Q], PJ1, PJ2) :-
 exploref(Case, [T|Q], PJ1, PJ2) :- T is -99, Case2 is Case +1, exploref(Case2, Q, PJ1, PJ2).
 choisiIAfaible(PJ1, PJ2, Case) :- exploref(L ,PJ1, PJ2), retourne_Max(Max, L), retourne_Pos(Max, Case, L),!.		
 			
-%%%%%%%%%%%%%%%%%%%%% MODE DE JEU IA %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%% JOUEUR VS IA %%%%%%%%%%%%%%%%%%%%%%%%%%%
 ia_commencerjeu:- affichePlateau([4,4,4,4,4,4],[4,4,4,4,4,4]), ia_faireJouerJoueur([],[],[4,4,4,4,4,4],[4,4,4,4,4,4],0,0,0).
 
 ia_faireJouerJoueur(LJ1, LJ2,PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl,
