@@ -60,7 +60,7 @@ awale:- nl,
 				nl,
 				read(Choix),
 				nl,
-				write('votre choix est'),
+				write('votre choix est : '),
 				write(Choix),
 				nl,
 				lancerjeu(Choix).
@@ -123,7 +123,7 @@ siPremiereDistributionPossible(PJ1, _, Case, NBGrainesCase):- nieme(Case,PJ1, NB
 
 %si le nombre de graines est épuisé distribuerSurPlateau renvoie dans CaseArrivée la dernière Case où il a déposé une graine.
 
-distribuerSurPlateau(0, Case, NBGrainesCase, PJ1, PJ1, CaseArrivee, Nbr):- NBGrainesCase == 0, compte(PJ1, X), CaseArrivee is 6 - X, Nbr is NBGrainesCase, !.
+distribuerSurPlateau(0, _, NBGrainesCase, PJ1, PJ1, CaseArrivee, Nbr):- NBGrainesCase == 0, compte(PJ1, X), CaseArrivee is 6 - X, Nbr is NBGrainesCase, !.
 
 
 %s'il reste encore des graines alors que PJ1 a été entièrement exploré, distribuerSurPlateau renvoie que CaseArrivee est -90 ce qui va permettre dde distribuer sur le plateau du joueur adverse
