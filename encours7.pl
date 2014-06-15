@@ -489,7 +489,7 @@ oh_faireJouerJoueur(LJ1, LJ2,PJ1, PJ2, SCOREJ1, SCOREJ2, 0) :- nl, \+partiefinie
 															write('Votre coup n est pas possible, veuillez rejouer'),
 															oh_faireJouerJoueur(LJ1, LJ2, PJ1,PJ2,SCOREJ1,SCOREJ2,0).
 
-/Nous avons voulu tester dans cette partie un IA plus faible pour affronter le joueur avec choisiIAfaible
+%Nous avons voulu tester dans cette partie un IA plus faible pour affronter le joueur avec choisiIAfaible
 oh_faireJouerJoueur(LJ1, LJ2, PJ1, PJ2, SCOREJ1, SCOREJ2, 1) :- nl,
 												write('L ordinateur joue !'),nl,
 												choisiIAfaible(PJ2, PJ1, X),
